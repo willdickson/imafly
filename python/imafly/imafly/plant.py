@@ -44,7 +44,6 @@ class Plant:
         return model
 
 
-
 class ProportionalVelocityPlant:
     """ 
     Implements a plant where the velocity is proportional to the input signal.
@@ -59,7 +58,6 @@ class ProportionalVelocityPlant:
     def update(self, t, dt, input_val):
         self.vel = self.gain*input_val
         self.pos += dt * self.vel
-
 
 
 class IntegralVelocityPlant:

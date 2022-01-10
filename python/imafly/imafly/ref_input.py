@@ -27,6 +27,14 @@ class RefInput:
     def t_rel(self,t):
         return t - self.t_init - self.t_settle
 
+    @property
+    def is_trial(self):
+        return t_rel >= 0.0
+
+    @property
+    def done(self):
+        return False
+
 
 class NoMotion(RefInput):
 

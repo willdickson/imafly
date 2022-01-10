@@ -12,30 +12,35 @@ class TrialRunner:
     def __init__(self,param):
         self.stimulus = stimulus.Stimulus(param['stimulus'])
         self.plant = plant.Plant(param['plant'])
-        self.time_step = param['time_step']
         self.h5_logger = h5_logger.H5Logger(param['data_file'], param_attr=param)
+        self.time_step = param['time_step']
 
     def run(self):
 
         t_init = time.time()
         t_last = 0.0 
 
-        while True:
+        while not self.stimulus.done:
 
+            # Check if it is time for next update
             t_curr = time.time() - t_init
             dt = t_curr - t_last
             if dt <= self.time_step:
                 continue
 
+            # Update plant model and stimulus
             self.plant.update(t_curr, dt)
             self.stimulus.update(t_curr, dt)
-            image = self.stimulus.display_image(self.plant.pos)
-            error = self.stimulus.vel - self.plant.vel
 
+            # Display current stimulus image
+            image = self.stimulus.display_image(self.plant.pos)
             cv2.imshow('image', image)
             if cv2.waitKey(1) & 0xff == ord('q'):
                 break
             t_last = t_curr
+            error = self.stimulus.vel - self.plant.vel
+
+            # Log data to file
             data = {
                     't'            : t_curr,
                     'v_stimulus'   : self.stimulus.vel,
@@ -45,6 +50,7 @@ class TrialRunner:
                     }
             self.h5_logger.add(data)
 
+            # Print run time info
             print(f't: {t_curr:0.3f}', end='') 
             print(f', dt: {dt:0.3f}', end='')
             print(f', vx: {self.plant.vel[0]:0.3f}', end='')  
@@ -53,7 +59,5 @@ class TrialRunner:
             print(f', cnt: {self.stimulus.motion.count}')
 
         self.plant.stop()
-
-
 
 

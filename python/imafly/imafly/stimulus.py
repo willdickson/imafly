@@ -12,6 +12,10 @@ class Stimulus:
         self.vel = np.array([0.0, 0.0])
         self.pos = np.array([0.0, 0.0])
 
+    @property
+    def done(self):
+        return self.motion.done
+
     def update(self, t, dt):
         self.vel = self.motion.velocity(t)
         self.pos += dt*self.vel

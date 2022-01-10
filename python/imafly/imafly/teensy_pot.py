@@ -25,9 +25,6 @@ class TeensyPot(serial.Serial):
         self.lock = threading.Lock()
         self.x = 0.0
 
-    def __del__(self):
-        self.stop()
-
     @property
     def vals(self):
         return np.array([self.x, 0.0])
