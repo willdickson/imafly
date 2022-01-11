@@ -1,6 +1,7 @@
 import imafly
 import h5py
 import matplotlib.pyplot as plt
+from plot_data import plot_data
 
 param = {
         'stimulus': { 
@@ -26,13 +27,35 @@ param = {
                 # ------------------------------
                 #'type'      : 'sin',
                 #'amplitude' : 300.0,
-                #'period'    : 2.5,
+                #'period'    : 10.0,
                 #'t_settle'  : 10.0,
+                #'max_count' : 3,
+                # ------------------------------
+                #'type'         : 'sin_series',
+                #'amplitude'    : 300.0,
+                #'period'       : 10.0,
+                #'cycles'       : 2,
+                #'repetitions'  : 3,
+                #'t_settle'     : 10.0,
+                # ------------------------------
+                #'type'        : 'sin_period_series',
+                #'amplitude'   : 300.0,
+                #'period_list' : [10.0, 5.0],
+                #'cycles'      : 3,
+                #'t_settle'    : 10.0,
                 # ------------------------------
                 'type'      : 'step',
                 'amplitude' : 400.0,
                 'period'    : 20.0,
                 't_settle'  : 10.0,
+                #'max_count' : 2,
+                # ------------------------------
+                #'type'      : 'step_series',
+                #'amplitude' : 400.0,
+                #'period'    : 20.0,
+                #'t_settle'  : 10.0,
+                #'cycles'    : 1, 
+                #'repetitions' : 2,
                 # ------------------------------
                 #'type'      : 'step_zero_step',
                 #'amplitude' : 400.0,
@@ -75,7 +98,7 @@ param = {
             'model': {
                 # -----------------------------
                 'type'  : 'velocity',
-                'xgain' : 800,
+                'xgain' : 1600,
                 'ygain' : 0,
                 # -----------------------------
                 #'type'  : 'integral',
@@ -93,19 +116,5 @@ param = {
 
 test = imafly.TrialRunner(param)
 test.run()
-
-# Load data from data file
-data = h5py.File(param['data_file'], 'r')
-t = data['t'][()]
-v_stimulus = data['v_stimulus'][()]
-v_plant = data['v_plant'][()]
-
-# Plot data
-fig, ax = plt.subplots(1,1)
-ax.plot(t, v_stimulus[:,0],'b')
-ax.plot(t, v_plant[:,0],'r')
-ax.set_xlabel('t (sec)')
-ax.set_ylabel('velocity (pix/sec)')
-ax.grid(True)
-plt.show()
+plot_data(param['data_file'])
 
