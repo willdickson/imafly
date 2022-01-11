@@ -16,6 +16,7 @@ class RefInput:
         vy = 0.0
         return np.array([vx, vy])
 
+
     @property
     def t_settle(self):
         try:
@@ -32,14 +33,77 @@ class RefInput:
         return t_rel >= 0.0
 
     @property
+    def max_count(self):
+        try:
+            max_count = self.param['max_count']
+        except KeyError:
+            max_count = None
+        return max_count
+
+    @property
     def done(self):
-        return False
+        if self.max_count is not None:
+            rval = self.count > self.max_count
+        else:
+            rval = False
+        return rval 
 
 
 class NoMotion(RefInput):
 
     def __init__(self, param, t_init=0.0):
         super().__init__(param, t_init=t_init)
+
+
+class DoneMotion(RefInput):
+
+    def __init__(self, param, t_init=0.0):
+        super().__init__(param, t_init=t_init)
+
+    @property
+    def done(self):
+        return True
+
+
+class BaseSeries(RefInput):
+
+    def __init__(self, param, t_init=0.0):
+        super().__init__(param, t_init=t_init)
+        self.motion = DoneMotion({}) 
+        self.motion_model = DoneMotion
+        self.is_first = True
+
+    @property
+    def done(self):
+        return self.count == self.repetitions 
+
+    @property
+    def repetitions(self):
+        return self.param['repetitions']
+
+    @property
+    def cycles(self):
+        return self.param['cycles']
+
+    @property
+    def motion_param(self):
+        return {}
+
+    def next_motion(self,t):
+        if not self.is_first:
+            self.count += 1
+        else:
+            self.is_first = False
+        if self.count < self.repetitions:
+            motion = self.motion_model(self.motion_param, t_init=t)
+        else:
+            motion = DoneMotion({})
+        return motion
+
+    def velocity(self,t):
+        if self.motion.done:
+            self.motion = self.next_motion(t)
+        return self.motion.velocity(t)
 
 
 class Sin(RefInput):
@@ -63,6 +127,48 @@ class Sin(RefInput):
             self.count = int(np.floor(t_rel/self.period))
             vx = self.amplitude*np.sin(2.0*np.pi*t_rel/self.period)
         return np.array([vx, vy])
+
+
+class SinSeries(BaseSeries):
+
+    def __init__(self, param, t_init=0.0):
+        super().__init__(param, t_init=t_init)
+        self.motion_model = Sin
+
+    @property
+    def motion_param(self): 
+        motion_param = { 
+                'amplitude' : self.amplitude(self.count),
+                'period'    : self.period(self.count),
+                't_settle'  : self.t_settle,
+                'max_count' : self.cycles-1,
+                }
+        return motion_param
+
+    def amplitude(self, num):
+        return self.param['amplitude']
+
+    def period(self, num):
+        return self.param['period']
+
+
+class SinPeriodSeries(SinSeries):
+
+    def __init__(self, param, t_init=0.0):
+        super().__init__(param, t_init=t_init)
+        self.motion = DoneMotion({}) 
+        self.is_first = True
+
+    @property
+    def period_list(self):
+        return self.param['period_list']
+
+    @property
+    def repetitions(self):
+        return len(self.period_list)
+
+    def period(self, num):
+        return self.period_list[num]
 
 
 class Step(RefInput):
@@ -91,6 +197,29 @@ class Step(RefInput):
                 sign = -1.0
             vx = sign*self.amplitude
         return np.array([vx,vy])
+
+
+class StepSeries(BaseSeries):
+
+    def __init__(self, param, t_init=0.0):
+        super().__init__(param, t_init=t_init)
+        self.motion_model = Step 
+
+    @property
+    def motion_param(self):
+        motion_param = { 
+                'amplitude' : self.amplitude(self.count),
+                'period'    : self.period(self.count),
+                't_settle'  : self.t_settle,
+                'max_count' : self.cycles-1,
+                }
+        return motion_param
+
+    def amplitude(self, num):
+        return self.param['amplitude']
+
+    def period(self, num):
+        return self.param['period']
 
 
 class StepZeroStep(RefInput):
@@ -232,6 +361,9 @@ class CyclicChirp(RefInput):
                 vx = sig.chirp(s,f0,t1,f1,method=self.method,phi=-90)
             vx = self.amplitude*vx
         return np.array([vx,vy])
+
+
+
 
 
 # -----------------------------------------------------------------------------

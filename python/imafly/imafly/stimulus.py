@@ -38,8 +38,14 @@ class Stimulus:
             model = ref_input.NoMotion(motion_param)
         elif motion_param['type'] == 'sin':
             model = ref_input.Sin(motion_param)
+        elif motion_param['type'] == 'sin_series':
+            model = ref_input.SinSeries(motion_param)
+        elif motion_param['type'] == 'sin_period_series':
+            model = ref_input.SinPeriodSeries(motion_param)
         elif motion_param['type'] == 'step':
             model = ref_input.Step(motion_param)
+        elif motion_param['type'] == 'step_series':
+            model = ref_input.StepSeries(motion_param)
         elif motion_param['type'] == 'step_zero_step':
             model = ref_input.StepZeroStep(motion_param)
         elif motion_param['type'] == 'random_step':
