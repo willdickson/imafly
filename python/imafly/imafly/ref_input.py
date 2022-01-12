@@ -9,13 +9,21 @@ class RefInput:
     def __init__(self, param, t_init=0.0):
         self.param = param
         self.t_init = t_init
-        self.count = 0
+        self._count = 0 
+        self._last_count = -1
 
-    def velocity(self,t):
-        vx = 0.0
-        vy = 0.0
-        return np.array([vx, vy])
+    @property
+    def event(self):
+        return self._count != self._last_count
 
+    @property
+    def count(self):
+        return self._count
+
+    @count.setter
+    def count(self,value):
+        self._last_count = self._count
+        self._count = value
 
     @property
     def t_settle(self):
@@ -24,13 +32,6 @@ class RefInput:
         except KeyError:
             t_settle = 0.0
         return t_settle
-
-    def t_rel(self,t):
-        return t - self.t_init - self.t_settle
-
-    @property
-    def is_trial(self):
-        return t_rel >= 0.0
 
     @property
     def max_count(self):
@@ -47,6 +48,18 @@ class RefInput:
         else:
             rval = False
         return rval 
+
+    def t_rel(self,t):
+        return t - self.t_init - self.t_settle
+
+    def is_trial(self,t):
+        return self.t_rel(t) >= 0.0
+
+    def velocity(self,t):
+        self.count = 0
+        vx = 0.0
+        vy = 0.0
+        return np.array([vx, vy])
 
 
 class NoMotion(RefInput):
@@ -74,6 +87,10 @@ class BaseSeries(RefInput):
         self.is_first = True
 
     @property
+    def event(self):
+        return (self._count != self._last_count) and self.motion.event
+
+    @property
     def done(self):
         return self.count == self.repetitions 
 
@@ -89,6 +106,9 @@ class BaseSeries(RefInput):
     def motion_param(self):
         return {}
 
+    def is_trial(self,t):
+        return self.motion.t_rel(t) >= 0.0
+
     def next_motion(self,t):
         if not self.is_first:
             self.count += 1
@@ -101,9 +121,11 @@ class BaseSeries(RefInput):
         return motion
 
     def velocity(self,t):
+        vel = self.motion.velocity(t)
         if self.motion.done:
             self.motion = self.next_motion(t)
-        return self.motion.velocity(t)
+            vel = self.motion.velocity(t)
+        return vel
 
 
 class Sin(RefInput):
@@ -196,6 +218,8 @@ class Step(RefInput):
             else:
                 sign = -1.0
             vx = sign*self.amplitude
+        else:
+            self.count = 0
         return np.array([vx,vy])
 
 

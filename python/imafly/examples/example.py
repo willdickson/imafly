@@ -48,13 +48,13 @@ param = {
                 'amplitude' : 400.0,
                 'period'    : 20.0,
                 't_settle'  : 10.0,
-                #'max_count' : 2,
+                'max_count' : 2,
                 # ------------------------------
-                #'type'      : 'step_series',
-                #'amplitude' : 400.0,
-                #'period'    : 20.0,
-                #'t_settle'  : 10.0,
-                #'cycles'    : 1, 
+                #'type'        : 'step_series',
+                #'amplitude'   : 400.0,
+                #'period'      : 20.0,
+                #'t_settle'    : 10.0,
+                #'cycles'      : 2, 
                 #'repetitions' : 2,
                 # ------------------------------
                 #'type'      : 'step_zero_step',
@@ -98,7 +98,7 @@ param = {
             'model': {
                 # -----------------------------
                 'type'  : 'velocity',
-                'xgain' : 1600,
+                'xgain' : 800,
                 'ygain' : 0,
                 # -----------------------------
                 #'type'  : 'integral',

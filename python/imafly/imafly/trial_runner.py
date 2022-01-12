@@ -42,17 +42,29 @@ class TrialRunner:
 
             # Log data to file
             data = {
-                    't'            : t_curr,
-                    'v_stimulus'   : self.stimulus.vel,
-                    'v_plant'      : self.plant.vel,
-                    'v_error'      : error, 
-                    'cnt_stimulus' : self.stimulus.motion.count,
+                    't'              : t_curr,
+                    'v_stimulus'     : self.stimulus.vel,
+                    'v_plant'        : self.plant.vel,
+                    'v_error'        : error, 
+                    'stimulus_count' : self.stimulus.motion.count,
+                    'is_trial'       : self.stimulus.motion.is_trial(t_curr),
+                    'stimulus_event' : self.stimulus.motion.event,
                     }
+            try:
+                data['cycle_count'] = self.stimulus.motion.motion.count
+            except AttributeError:
+                pass
+            try:
+                data['cycle_event'] = self.stimulus.motion.motion.event
+            except AttributeError:
+                pass
             self.h5_logger.add(data)
 
             # Print run time info
             print(f't: {t_curr:0.3f}', end='') 
             print(f', dt: {dt:0.3f}', end='')
+            print(f', sx: {self.stimulus.vel[0]:0.3f}', end='')  
+            print(f', sy: {self.stimulus.vel[1]:0.3f}', end='')
             print(f', vx: {self.plant.vel[0]:0.3f}', end='')  
             print(f', vy: {self.plant.vel[1]:0.3f}', end='')
             print(f', e: {error[0]:0.3f}', end='')
