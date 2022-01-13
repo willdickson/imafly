@@ -9,8 +9,8 @@ class RefInput:
     def __init__(self, param, t_init=0.0):
         self.param = param
         self.t_init = t_init
-        self._count = 0 
-        self._last_count = -1
+        self._count = -1 
+        self._last_count = 0 
 
     @property
     def event(self):
@@ -56,7 +56,11 @@ class RefInput:
         return self.t_rel(t) >= 0.0
 
     def velocity(self,t):
-        self.count = 0
+        t_rel = self.t_rel(t)
+        if t_rel < 0.0:
+            self.count = -1
+        else:
+            self.count = 0
         vx = 0.0
         vy = 0.0
         return np.array([vx, vy])
@@ -148,6 +152,8 @@ class Sin(RefInput):
         if t_rel >= 0.0:
             self.count = int(np.floor(t_rel/self.period))
             vx = self.amplitude*np.sin(2.0*np.pi*t_rel/self.period)
+        else:
+            self.count = -1
         return np.array([vx, vy])
 
 
@@ -219,7 +225,7 @@ class Step(RefInput):
                 sign = -1.0
             vx = sign*self.amplitude
         else:
-            self.count = 0
+            self.count = -1 
         return np.array([vx,vy])
 
 
@@ -282,6 +288,8 @@ class StepZeroStep(RefInput):
                 vx = -self.amplitude
             else:
                 vx = 0.0
+        else:
+            self.count = -1
         return np.array([vx, vy])
 
 
@@ -324,6 +332,8 @@ class RandomStep(RefInput):
                 delta_velocity = self.max_velocity - self.min_velocity
                 self.curr_velocity = self.min_velocity + rand_val*delta_velocity
             vx = self.curr_velocity
+        else:
+            self.count = -1
         return np.array([vx,vy])
 
 
@@ -384,6 +394,8 @@ class CyclicChirp(RefInput):
                 f1 = self.min_freq
                 vx = sig.chirp(s,f0,t1,f1,method=self.method,phi=-90)
             vx = self.amplitude*vx
+        else:
+            self.count = -1
         return np.array([vx,vy])
 
 
