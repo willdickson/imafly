@@ -17,6 +17,10 @@ class TrialRunner:
 
     def run(self):
 
+        image = self.stimulus.display_image(self.plant.pos)
+        cv2.imshow('imafly', image)
+        cv2.waitKey(1)
+
         t_init = time.time()
         t_last = 0.0 
 
@@ -34,7 +38,7 @@ class TrialRunner:
 
             # Display current stimulus image
             image = self.stimulus.display_image(self.plant.pos)
-            cv2.imshow('image', image)
+            cv2.imshow('imafly', image)
             if cv2.waitKey(1) & 0xff == ord('q'):
                 break
             t_last = t_curr
@@ -61,14 +65,15 @@ class TrialRunner:
             self.h5_logger.add(data)
 
             # Print run time info
-            print(f't: {t_curr:0.3f}', end='') 
-            print(f', dt: {dt:0.3f}', end='')
-            print(f', sx: {self.stimulus.vel[0]:0.3f}', end='')  
-            print(f', sy: {self.stimulus.vel[1]:0.3f}', end='')
-            print(f', vx: {self.plant.vel[0]:0.3f}', end='')  
-            print(f', vy: {self.plant.vel[1]:0.3f}', end='')
-            print(f', e: {error[0]:0.3f}', end='')
-            print(f', cnt: {self.stimulus.motion.count}')
+            if 1:
+                print(f't: {t_curr:0.3f}', end='') 
+                print(f', dt: {dt:0.3f}', end='')
+                print(f', sx: {self.stimulus.vel[0]:0.3f}', end='')  
+                print(f', sy: {self.stimulus.vel[1]:0.3f}', end='')
+                print(f', vx: {self.plant.vel[0]:0.3f}', end='')  
+                print(f', vy: {self.plant.vel[1]:0.3f}', end='')
+                print(f', e: {error[0]:0.3f}', end='')
+                print(f', cnt: {self.stimulus.motion.count}')
 
         self.plant.stop()
 

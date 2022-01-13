@@ -16,8 +16,9 @@ param = {
             'motion' : {
                 'type'        : 'step',
                 'amplitude'   : 400.0,
-                'period'      : 2.0,
-                't_settle'    : 1.0,
+                'period'      : 20.0,
+                't_settle'    : 20.0,
+                'max_count'   : 10,
                 },
             },
         'plant': {
@@ -29,7 +30,7 @@ param = {
                 },
             'model': {
                 'type'  : 'velocity',
-                'xgain' : 800,
+                'xgain' : 1600,
                 'ygain' : 0,
                 },
             },

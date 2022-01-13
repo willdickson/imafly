@@ -16,8 +16,8 @@ param = {
             'motion' : {
                 'type'        : 'step_series',
                 'amplitude'   : 400.0,
-                'period'      : 2.0,
-                't_settle'    : 1.0,
+                'period'      : 20.0,
+                't_settle'    : 20.0,
                 'cycles'      : 2, 
                 'repetitions' : 2,
                 },

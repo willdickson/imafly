@@ -10,7 +10,7 @@ class RefInput:
         self.param = param
         self.t_init = t_init
         self._count = -1 
-        self._last_count = 0 
+        self._last_count = -2 
 
     @property
     def event(self):
@@ -88,11 +88,14 @@ class BaseSeries(RefInput):
         super().__init__(param, t_init=t_init)
         self.motion = DoneMotion({}) 
         self.motion_model = DoneMotion
+        self._count = 0 
+        self._last_count = -1 
         self.is_first = True
 
     @property
     def event(self):
-        return (self._count != self._last_count) and self.motion.event
+        #return (self._count != self._last_count) and self.motion.event
+        return self._count != self._last_count
 
     @property
     def done(self):
@@ -129,6 +132,8 @@ class BaseSeries(RefInput):
         if self.motion.done:
             self.motion = self.next_motion(t)
             vel = self.motion.velocity(t)
+        else:
+            self.count = self.count
         return vel
 
 

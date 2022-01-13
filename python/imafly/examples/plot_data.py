@@ -24,44 +24,59 @@ def plot_data(data_file):
         have_cycle_event = True
     except KeyError:
         have_cycle_event = False
+
+    if 1:
+        fig, ax = plt.subplots(2,1,sharex=True)
+        n = 0
+        ax[n].plot(t, v_stimulus[:,0],'b')
+        ax[n].plot(t, v_plant[:,0],'r')
+        ax[n].set_ylabel('vel (pix/sec)')
+        ax[n].grid(True)
+
+        n += 1
+        ax[n].plot(t, v_error[:,0],'b')
+        ax[n].grid(True)
+        ax[n].set_ylabel('err (pix/sec)')
+        ax[n].set_xlabel('t (sec)')
+
     
-    # Plot data
-    num_plots = 5
-    if have_cycle_count and have_cycle_event:
-        num_plots = 7
-    fig, ax = plt.subplots(num_plots,1,sharex=True)
-    n = 0
-    ax[n].plot(t, v_stimulus[:,0],'b')
-    ax[n].plot(t, v_plant[:,0],'r')
-    ax[n].set_xlabel('t (sec)')
-    ax[n].set_ylabel('velocity (pix/sec)')
-    ax[n].grid(True)
-
-    n += 1
-    ax[n].plot(t, v_error[:,0],'b')
-    ax[n].grid(True)
-
-    n += 1
-    ax[n].plot(t, is_trial,'b')
-    ax[n].grid(True)
-
-    n += 1
-    ax[n].plot(t,stimulus_count)
-    ax[n].grid(True)
-
-    if have_cycle_count:
-        n += 1
-        ax[n].plot(t,cycle_count)
+    if 0:
+        num_plots = 5
+        if have_cycle_count and have_cycle_event:
+            num_plots = 7
+        fig, ax = plt.subplots(num_plots,1,sharex=True)
+        n = 0
+        ax[n].plot(t, v_stimulus[:,0],'b')
+        ax[n].plot(t, v_plant[:,0],'r')
+        ax[n].set_xlabel('t (sec)')
+        ax[n].set_ylabel('velocity (pix/sec)')
         ax[n].grid(True)
 
-    n += 1
-    ax[n].plot(t,stimulus_event)
-    ax[n].grid(True)
-
-    if have_cycle_event:
         n += 1
-        ax[n].plot(t,cycle_event)
+        ax[n].plot(t, v_error[:,0],'b')
         ax[n].grid(True)
+
+        n += 1
+        ax[n].plot(t, is_trial,'b')
+        ax[n].grid(True)
+
+        n += 1
+        ax[n].plot(t,stimulus_count)
+        ax[n].grid(True)
+
+        if have_cycle_count:
+            n += 1
+            ax[n].plot(t,cycle_count)
+            ax[n].grid(True)
+
+        n += 1
+        ax[n].plot(t,stimulus_event)
+        ax[n].grid(True)
+
+        if have_cycle_event:
+            n += 1
+            ax[n].plot(t,cycle_event)
+            ax[n].grid(True)
 
     plt.show()
 
