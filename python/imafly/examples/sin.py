@@ -16,8 +16,8 @@ param = {
             'motion' : {
                 'type'      : 'sin',
                 'amplitude' : 300.0,
-                'period'    : 2.0,
-                't_settle'  : 3.0,
+                'period'    : 5.0,
+                't_settle'  : 10.0,
                 'max_count' : 5,
                 },
             },

@@ -17,7 +17,7 @@ param = {
                 'type'        : 'step',
                 'amplitude'   : 400.0,
                 'period'      : 20.0,
-                't_settle'    : 20.0,
+                't_settle'    : 10.0,
                 'max_count'   : 10,
                 },
             },
@@ -30,7 +30,7 @@ param = {
                 },
             'model': {
                 'type'  : 'velocity',
-                'xgain' : 1600,
+                'xgain' : 800,
                 'ygain' : 0,
                 },
             },
