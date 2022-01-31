@@ -3,6 +3,7 @@ import h5py
 import matplotlib.pyplot as plt
 from plot_data import plot_data
 
+
 param = {
         'stimulus': { 
             'image': {
@@ -30,14 +31,16 @@ param = {
                 },
             'model': {
                 'type'  : 'velocity',
-                'xgain' : 800,
                 'ygain' : 0,
                 },
             },
-        'data_file' : 'data.hdf5', 
         'time_step' : 0.02,
         }
 
+kj = 2000
+
+param['plant']['model']['xgain'] = kj
+param['data_file'] = f'data_kj_{kj}.hdf5'
 test = imafly.TrialRunner(param)
 test.run()
 plot_data(param['data_file'])

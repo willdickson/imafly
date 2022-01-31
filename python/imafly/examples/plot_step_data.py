@@ -55,6 +55,7 @@ for count in np.unique(step_count):
             've'       : ve[count_mask],
             't_shift'  : t_shift[count_mask],
             've_shift' : ve_shift[count_mask],
+            'vp_filt'  : vp_filt[count_mask],
             'dvp_filt' : dvp_filt[count_mask],
             }
 
@@ -76,6 +77,7 @@ for count, data_dict in count_to_data.items():
             've'       : data_dict['ve'][mask],
             't_shift'  : data_dict['t_shift'][mask],
             've_shift' : data_dict['ve_shift'][mask],
+            'vp_filt'  : data_dict['vp_filt'][mask],
             'dvp_filt' : data_dict['dvp_filt'][mask], 
             }
 
@@ -89,6 +91,7 @@ for count, data_dict in count_to_data.items():
             've'       : data_dict['ve'][mask],
             't_shift'  : data_dict['t_shift'][mask],
             've_shift' : data_dict['ve_shift'][mask],
+            'vp_filt'  : data_dict['vp_filt'][mask],
             'dvp_filt' : data_dict['dvp_filt'][mask], 
             }
 
@@ -134,35 +137,51 @@ ax1[n].set_xlabel(r'$t$ $(sec)$')
 #ax2.set_ylabel(r'$\dot{u}(t)$')
 
 
-fig3, ax3 = plt.subplots(1,1)
 ve_shift_list = []
+vp_filt_list = []
 dvp_filt_list = []
 for count, data_dict in count_to_pos_data.items():
-    #ax3.plot(data_dict['ve_shift'], data_dict['dvp_filt'], 'b.')
     ve_shift_list.extend(data_dict['ve_shift'].tolist())
+    vp_filt_list.extend(data_dict['vp_filt'].tolist())
     dvp_filt_list.extend(data_dict['dvp_filt'].tolist())
 for count, data_dict in count_to_neg_data.items():
-    #ax3.plot(data_dict['ve_shift'], data_dict['dvp_filt'], 'b.')
     ve_shift_list.extend(data_dict['ve_shift'].tolist())
+    vp_filt_list.extend(data_dict['vp_filt'].tolist())
     dvp_filt_list.extend(data_dict['dvp_filt'].tolist())
 
 
 ve_shift_array = np.array(ve_shift_list)
+vp_filt_array = np.array(vp_filt_list)
 dvp_filt_array = np.array(dvp_filt_list)
 du_filt_array = dvp_filt_array/kj
 
 fit = np.polyfit(ve_shift_array, du_filt_array, 1)
 ve_shift_fit = np.linspace(ve_shift_array.min(), ve_shift_array.max(), 1000)
 du_filt_fit = np.polyval(fit, ve_shift_fit)
-ax3.plot(ve_shift_array, du_filt_array, 'b.')
-ax3.plot(ve_shift_fit, du_filt_fit, 'r', linewidth=4)
+fig3, ax3 = plt.subplots(1,1, figsize=(8,4))
+h_dvp, = ax3.plot(ve_shift_array, dvp_filt_array, 'b.')
+h_fit, = ax3.plot(ve_shift_fit, kj*du_filt_fit, 'r', linewidth=4)
 ax3.grid(True)
-ax3.set_xlabel(r'$e(t-\tau)$')
-ax3.set_ylabel(r'$\dot{u}(t)$')
+ax3.set_xlabel(r'lagged error $e(t-\tau)$ (pix/s)', fontsize=14)
+ax3.set_ylabel(r'acceleration $dv/dt$ (pix/$s^2$)', fontsize=14)
+fig3.legend((h_dvp, h_fit), ('accel', 'slope=$k_i k_j$'), 'upper center', fontsize=12)
+fig3.tight_layout()
+fig3.savefig('accel_vs_lagged_error.png')
 print(f'kj: {kj}')
 print(f'fit: {fit}')
 print(f'ki*kj: {fit[0]*kj}')
 print(np.exp(-1)/0.280)
+
+fig4, ax4 = plt.subplots(1,1, figsize=(8,4))
+#ax4.plot(ve_shift_array, vp_filt_array, 'b.')
+ax4.plot(ve_shift, vp_filt, 'b.')
+ax4.set_xlabel(r'lagged error $e(t-\tau)$ (pix/s)', fontsize=14)
+ax4.set_ylabel(r'velocity $v(t)$ (pix/s)', fontsize=14)
+ax4.grid(True)
+fig4.tight_layout()
+#fig4.savefig('velocity_vs_lagged_error.png')
+
+
 plt.show()
 
 

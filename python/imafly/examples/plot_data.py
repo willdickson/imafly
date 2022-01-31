@@ -1,5 +1,7 @@
 import sys
 import h5py
+import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 
 def plot_data(data_file):
@@ -9,23 +11,30 @@ def plot_data(data_file):
     v_stimulus = data['v_stimulus'][()]
     v_plant = data['v_plant'][()]
     v_error = data['v_error'][()]
-    is_trial = data['is_trial']
-    stimulus_count = data['stimulus_count']
-    stimulus_event = data['stimulus_event']
+    is_trial = data['is_trial'][()]
+    stimulus_count = data['stimulus_count'][()]
+    stimulus_event = data['stimulus_event'][()]
 
     try:
-        cycle_count = data['cycle_count']
+        cycle_count = data['cycle_count'][()]
         have_cycle_count = True
     except KeyError:
         have_cycle_count = False
         
     try:
-        cycle_event = data['cycle_event']
+        cycle_event = data['cycle_event'][()]
         have_cycle_event = True
     except KeyError:
         have_cycle_event = False
 
-    if 1:
+    mask = np.logical_and(stimulus_count >= 6, stimulus_count <=9)
+    t = t[mask]
+    v_stimulus = v_stimulus[mask,:]
+    v_plant = v_plant[mask,:]
+    v_error = v_error[mask,:]
+
+
+    if 0:
         fig, ax = plt.subplots(2,1,sharex=True)
         n = 0
         ax[n].plot(t, v_stimulus[:,0],'b')
@@ -38,6 +47,20 @@ def plot_data(data_file):
         ax[n].grid(True)
         ax[n].set_ylabel('err (pix/sec)')
         ax[n].set_xlabel('t (sec)')
+
+    if 1:
+        fig, ax = plt.subplots(1,1,sharex=True,figsize=(8,5))
+        h_stimulus, = ax.plot(t, v_stimulus[:,0],'k',linewidth=2)
+        h_plant, = ax.plot(t, v_plant[:,0],'b', linewidth=2)
+        ax.set_ylabel('v (pix/sec)', fontsize=14)
+        ax.set_xlabel('t (sec)', fontsize=14)
+        ax.grid(True)
+        rect = ax.add_patch(matplotlib.patches.Rectangle((158, 330), 4, 90, linewidth=2, edgecolor='r', facecolor='none'))
+        fig.legend((h_stimulus, h_plant), ('r(t)', 'v(t)'), 'best', fontsize=14)
+        fig.tight_layout()
+        fig.savefig('step_response.png') 
+
+
 
     
     if 0:

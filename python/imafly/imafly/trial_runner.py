@@ -62,6 +62,10 @@ class TrialRunner:
                 data['cycle_event'] = self.stimulus.motion.motion.event
             except AttributeError:
                 pass
+            try:
+                data['plant_gain'] = self.plant.model.gain
+            except AttributeError:
+                pass
             self.h5_logger.add(data)
 
             # Print run time info
